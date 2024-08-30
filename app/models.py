@@ -2,7 +2,7 @@ from app import db
 
 class IncidentReport(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    officer_id = db.Column(db.String(50), nullable=False)
+    officer_id = db.Column(db.String(50), nullable=False)  # New field for officer ID
     date = db.Column(db.Date, nullable=False)
     address = db.Column(db.String(255), nullable=False)
     urgency = db.Column(db.String(50), nullable=False)
@@ -21,6 +21,7 @@ class IncidentReport(db.Model):
     def to_dict(self):
         return {
             'id': self.id,
+            'officer_id': self.officer_id,  # Include officer_id in the dictionary
             'date': self.date.isoformat(),
             'address': self.address,
             'urgency': self.urgency,
