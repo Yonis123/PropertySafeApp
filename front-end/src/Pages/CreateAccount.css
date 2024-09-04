@@ -1,0 +1,71 @@
+.create-account-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #e3f2fd;
+  }
+  
+  .create-account-card {
+    width: 100%;
+    max-width: 500px;
+    padding: 25px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+  
+  .create-account-card:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  }
+  
+  .create-account-card .account-image-section {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .create-account-card .account-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  .create-account-card h2 {
+    color: #333;
+    font-family: 'Poppins', sans-serif;
+    margin-bottom: 20px;
+  }
+  
+  .create-account-card .form-control {
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    padding: 10px;
+  }
+  
+  .create-account-card .btn {
+    border-radius: 8px;
+    padding: 12px 25px;
+    font-weight: 500;
+    font-size: 1.1rem;
+  }
+  
+  .create-account-card .btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+  }
+  
+  .create-account-card .btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+  }
+  
+  .create-account-card label {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    color: #555;
+  }
+  
