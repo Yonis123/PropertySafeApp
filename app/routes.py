@@ -2,10 +2,53 @@ from flask import Blueprint, request, jsonify
 from app.models import db, IncidentReport, PersonInvolved
 from datetime import datetime
 from app import db
-
+from app.models import PropertyManager
+from flask_login import login_user, logout_user, login_required, current_user
+from app.email_utils import send_report_notification
+from werkzeug.security import generate_password_hash
+from flask_cors import cross_origin
 
 main = Blueprint('main', __name__)
 
+
+# a route to create an account for pm. 
+@main.route('/api/create-account', methods=['POST'])
+def create_account():
+    data = request.get_json()
+
+    # Extract the fields from the request
+    email = data.get('email')
+    password = data.get('password')
+
+    # Check if the username or email already exists
+    existing_user = PropertyManager.query.filter((PropertyManager.email == email)).first()
+    if existing_user:
+        return jsonify({"error": "Username or email already exists"}), 400
+
+    # Create a new PropertyManager instance
+    new_pm = PropertyManager(
+        email=email,
+        password_hash=generate_password_hash(password)
+    )
+
+    # Add the new property manager to the database
+    db.session.add(new_pm)
+    db.session.commit()
+
+    return jsonify({"message": "Account created successfully"}), 201
+
+
+# i need a route to get the number of reports for the pm 
+
+@main.route('/api/reports_count/<pms_email>', methods=['GET'])
+@cross_origin(supports_credentials=True)
+def get_reports_count(pms_email):
+    # Query the database to count the number of reports sent to the given PM
+    report_count = IncidentReport.query.filter_by(pms_email=pms_email).count()
+
+    # Return the count as a JSON response
+    return jsonify({'pm_email': pms_email, 'reports_count': report_count})
+    
 
 # an api to create an incicent report
 
@@ -19,6 +62,7 @@ def create_report():
     # Create the IncidentReport instance
     new_report = IncidentReport(
         date=date_obj,
+        officer_id = data['officer_id'],
         address=data['address'],
         urgency=data['urgency'],
         start_time=datetime.strptime(data['start_time'], '%H:%M:%S').time(),  # Convert time string to time object
@@ -50,6 +94,8 @@ def create_report():
 
     # Commit the transaction to save both the report and the people involved
     db.session.commit()
+    
+    send_report_notification(new_report.pms_email, new_report)
 
     return jsonify({
         "message": "Report and associated people created successfully",
@@ -60,6 +106,7 @@ def create_report():
 # an api to get all the reports that a property manager receive  sorted by most recent
 
 @main.route('/api/reports/<pms_email>', methods=['GET'])
+@cross_origin(supports_credentials=True)
 def get_reports_for_manager(pms_email):
     # Query the database for reports associated with the given pms_email
     reports = IncidentReport.query.filter_by(pms_email=pms_email).order_by(IncidentReport.date.desc()).all()
@@ -68,6 +115,51 @@ def get_reports_for_manager(pms_email):
     reports_list = [report.to_dict() for report in reports]
     
     return jsonify({"reports": reports_list}), 200
+
+
+# search function 
+@main.route('/api/search_reports', methods=['GET'])
+@cross_origin(supports_credentials=True)
+def search_reports():
+    pm_email = request.args.get('pm_email')  # Property manager's email
+    unit_number = request.args.get('unit_number')  # Unit number to filter by
+    start_date = request.args.get('start_date')  # Start date to filter by
+    end_date = request.args.get('end_date')  # End date to filter by
+    unresolved = request.args.get('unresolved')  # Filter unresolved reports
+
+    # Start the query by filtering reports associated with the PM
+    query = IncidentReport.query.filter_by(pms_email=pm_email)
+
+    # Filter by unit number if provided
+    if unit_number:
+        query = query.join(PersonInvolved).filter(PersonInvolved.unit_number == unit_number)
+
+    # Filter by date range if provided
+    if start_date:
+        try:
+            start_date_obj = datetime.strptime(start_date, '%Y-%m-%d').date()
+            query = query.filter(IncidentReport.date >= start_date_obj)
+        except ValueError:
+            return jsonify({"error": "Invalid start date format"}), 400
+
+    if end_date:
+        try:
+            end_date_obj = datetime.strptime(end_date, '%Y-%m-%d').date()
+            query = query.filter(IncidentReport.date <= end_date_obj)
+        except ValueError:
+            return jsonify({"error": "Invalid end date format"}), 400
+
+    # Filter by unresolved reports if requested
+    if unresolved == 'true':
+        query = query.filter(IncidentReport.resolved == 'No')
+
+    # Execute the query and get the filtered reports
+    reports = query.all()
+
+    # Convert reports to a format that can be returned as JSON
+    report_list = [report.to_dict() for report in reports]
+
+    return jsonify({'reports': report_list})
 
     
 # an api that gets all the reports of a particular unit number sent to them 
@@ -133,8 +225,22 @@ def get_reports():
 
 # Get a Single Incident Report
 @main.route('/api/reports/<int:id>', methods=['GET'])
+@cross_origin(supports_credentials=True)
 def get_report(id):
     report = IncidentReport.query.get_or_404(id)
+    return jsonify(report.to_dict())
+
+
+# resolve report
+@main.route('/api/resolve/<int:id>', methods=['PUT'])
+@cross_origin(supports_credentials=True)
+def resolve_report(id):
+    report = IncidentReport.query.get_or_404(id)
+    report.resolved = "Yes"
+    report.time_resolved = datetime.strptime(datetime.now().strftime('%H:%M:%S'), '%H:%M:%S').time()
+    db.session.commit()
+    
+    
     return jsonify(report.to_dict())
 
 # Update an Incident Report

@@ -6,20 +6,60 @@ import reportpic from '../assets/png/report.png';
 import resolvedpic from '../assets/png/resolved.png';
 import resolved2pic from '../assets/png/resolved2.png';
 import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';  // Import Modal component
 
 function PMDashboard() {
     const [reports, setReports] = useState([]); // State to store reports, initialized as an empty array
     const [totalReports, setTotalReports] = useState(0); // State to store the total number of reports
     const [pmEmail, setPmEmail] = useState(""); // State to store the PM's email
+    const [selectedReport, setSelectedReport] = useState(null); // State to store the currently selected report for the modal
+    const [showModal, setShowModal] = useState(false); // State to control modal visibility
     const navigate = useNavigate(); // Use useNavigate for navigation
 
+    const handleShow = () => setShowModal(true);
+    const handleClose = () => setShowModal(false);
+
+    // Function to fetch and view the report details in a modal
     const viewReport = async (id) => {
-        console.log(`Viewing report ID: ${id}`);
+        try {
+            const response = await fetch(`http://localhost:5000/api/reports/${id}`, {
+                method: 'GET',
+                credentials: 'include',  // Include credentials (session cookies)
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setSelectedReport(data);  // Set the selected report data
+                handleShow();  // Show the modal
+            } else {
+                console.error('Error fetching incident report:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error fetching incident report:', error);
+        }
     };
 
     const resolveReport = async (id) => {
-        console.log(`Resolving report ID: ${id}`);
+        try {
+            const response = await fetch(`http://localhost:5000/api/resolve/${id}`, {
+                method: 'PUT',
+                credentials: 'include',  // Include credentials (session cookies)
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                fetchReports(pmEmail);  // Refresh reports after resolving
+            } else {
+                console.error('Error resolving report:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error resolving report:', error);
+        }
     };
+
+    const take_to_reports_page = async () => {
+        navigate('/PM-reports')
+    }
 
     // Function to fetch property manager email
     const fetchPMEmail = async () => {
@@ -114,11 +154,16 @@ function PMDashboard() {
         }
     };
 
+    // Sort and slice the reports to get the 4 most recent (oldest first)
+    const firstFourReports = reports
+        .sort((a, b) => new Date(a.date) - new Date(b.date))  // Sort by date, oldest first
+        .slice(0, 4);  // Get only the first 4 reports
+
     return (
         <div className="pm-dashboard-container">
             <nav className="pm-nav">
                 <a href="#" className="active">Dashboard</a>
-                <a href="#">Reports</a>
+                <a href="#" onClick={take_to_reports_page}>Reports</a>
                 <button onClick={handleLogout} className="btn btn-outline-danger">
                     Logout
                 </button>
@@ -149,7 +194,7 @@ function PMDashboard() {
                     </div>
                 </div>
                 <div className="pm-reports-list">
-                    <h2>Recent Reports</h2>
+                    <h2>Most Recent Reports</h2>
                     <table className="reports-table">
                         <thead>
                             <tr>
@@ -161,7 +206,7 @@ function PMDashboard() {
                             </tr>
                         </thead>
                         <tbody>
-                            {reports.map((report) => (
+                            {firstFourReports.map((report) => (
                                 <tr key={report.id}>
                                     <td>{report.date}</td>
                                     <td>{report.event_description}</td>
@@ -179,18 +224,56 @@ function PMDashboard() {
                                         <Button variant="outline-primary" onClick={() => viewReport(report.id)}>View</Button>
                                         {report.resolved === 'No' && (
                                             <Button variant="outline-success" onClick={() => resolveReport(report.id)} className="ml-2">
-                                                Resolve
-                                            </Button>
-                                        )}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                                            Resolve
+                                        </Button>
+                                    )}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
+
+            {/* Modal for viewing report details */}
+            <Modal show={showModal} onHide={handleClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Report Details</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {selectedReport ? (
+                        <div>
+                            <p><strong>Officer ID:</strong> {selectedReport.officer_id}</p>
+                            <p><strong>Date:</strong> {selectedReport.date}</p>
+                            <p><strong>Incident:</strong> {selectedReport.event_description}</p>
+                            <p><strong>Address:</strong> {selectedReport.address}</p>
+                            <p><strong>Urgency:</strong> {selectedReport.urgency}</p>
+                            <p><strong>Status:</strong> {selectedReport.resolved === 'Yes' ? 'Resolved' : 'Open'}</p>
+                            {selectedReport.resolved === 'Yes' && (
+                                <p><strong>Time Resolved:</strong> {selectedReport.time_resolved}</p>
+                            )}
+                            <p><strong>Contact Info:</strong> {selectedReport.contact_info}</p>
+                            <p><strong>People Involved:</strong></p>
+                            <ul>
+                                {selectedReport.people_involved.map((person) => (
+                                    <li key={person.id}>
+                                        <strong>{person.person_type}:</strong> {person.name} ({person.additional_info})
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    ) : (
+                        <p>Loading report details...</p>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleClose}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
-    );
+    </div>
+);
 }
 
 export default PMDashboard;

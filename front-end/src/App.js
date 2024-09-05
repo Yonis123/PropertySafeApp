@@ -8,6 +8,7 @@ import PMPortal from './Pages/PMPortal';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import CreateAccount from './Pages/CreateAccount'; 
 import PMDashboard from './Pages/PM-dashboard';
+import PM_Reports from './Pages/PM-reports';
 
 
 
@@ -20,6 +21,7 @@ function App() {
         <Route path="/officer-portal-page" element={<OfficerPortalPage />} />
         <Route path="/create-account" element={<CreateAccount />} />
         <Route path="/PM-dashboard" element={<PMDashboard/>} />
+        <Route path="/PM-reports" element={<PM_Reports/>} />
       </Routes>
     </Router>
     
