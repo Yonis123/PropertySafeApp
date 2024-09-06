@@ -10,7 +10,7 @@ function HomePage() {
 
     const handleSelection = (role) => {
         if (role === 'officer') {
-            navigate('/officer-portal-page');
+            navigate('/createOrUpdate');
         } else if (role === 'manager') {
             navigate('/pm-portal');
         }

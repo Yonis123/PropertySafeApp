@@ -10,5 +10,5 @@
 # Ignore compiled files
 *.pyc
 __pycache__/
-.env
+
 .venv/

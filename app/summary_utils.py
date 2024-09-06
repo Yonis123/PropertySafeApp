@@ -6,6 +6,19 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 
 def generate_ai_summary(report):
     try:
+
+        report_data = {
+            "officer_id": report.officer_id,
+            "date": report.date.strftime('%Y-%m-%d'),
+            "start_time": report.start_time.strftime('%H:%M'),
+            "address": report.address,
+            "urgency": report.urgency,
+            "event_description": report.event_description,
+            "resolved": report.resolved,
+            "time_resolved": report.time_resolved.strftime('%H:%M') if report.time_resolved else None,
+            "comments": report.comments
+        }
+        
         # Create a chat completion request
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",  # You can use "gpt-4" if available
@@ -16,7 +29,7 @@ def generate_ai_summary(report):
                 },
                 {
                     "role": "user",
-                    "content": f"Please summarize the following data regarding an incident report sent by a security officer, focusing primarily on the key events that occurred. Additionally, suggest potential actions the property manager could take:\n\n{report}"
+                    "content": f"Please summarize the following data regarding an incident report sent by a security officer, foucs on describing overall what happened:\n\n{report_data}"
                 }
             ],
             max_tokens=150

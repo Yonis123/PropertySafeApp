@@ -156,7 +156,7 @@ function PMDashboard() {
 
     // Sort and slice the reports to get the 4 most recent (oldest first)
     const firstFourReports = reports
-        .sort((a, b) => new Date(a.date) - new Date(b.date))  // Sort by date, oldest first
+        // .sort((a, b) => new Date(a.date) - new Date(b.date))  // Sort by date, oldest first
         .slice(0, 4);  // Get only the first 4 reports
 
     return (
@@ -260,6 +260,7 @@ function PMDashboard() {
                                     </li>
                                 ))}
                             </ul>
+                            <p><strong>More Info:</strong> {selectedReport.comments}</p>
                         </div>
                     ) : (
                         <p>Loading report details...</p>

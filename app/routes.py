@@ -4,7 +4,7 @@ from datetime import datetime
 from app import db
 from app.models import PropertyManager
 from flask_login import login_user, logout_user, login_required, current_user
-from app.email_utils import send_report_notification
+from app.email_utils import send_report_notification, send_notif_update
 from werkzeug.security import generate_password_hash
 from flask_cors import cross_origin
 
@@ -52,22 +52,37 @@ def get_reports_count(pms_email):
 
 # an api to create an incicent report
 
-@main.route('/api/reports', methods=['POST'])
+@main.route('/api/make_report', methods=['POST'])
 def create_report():
     data = request.get_json()
 
     # Convert the date string to a Python date object
     date_obj = datetime.strptime(data['date'], '%Y-%m-%d').date()
 
+    # Try to parse the start time and time resolved in either format
+    start_time_str = data['start_time']
+    try:
+        start_time_obj = datetime.strptime(start_time_str, '%H:%M:%S').time()
+    except ValueError:
+        start_time_obj = datetime.strptime(start_time_str, '%H:%M').time()
+
+    time_resolved_str = data.get('time_resolved')
+    time_resolved_obj = None
+    if time_resolved_str:
+        try:
+            time_resolved_obj = datetime.strptime(time_resolved_str, '%H:%M:%S').time()
+        except ValueError:
+            time_resolved_obj = datetime.strptime(time_resolved_str, '%H:%M').time()
+
     # Create the IncidentReport instance
     new_report = IncidentReport(
         date=date_obj,
-        officer_id = data['officer_id'],
+        officer_id=data['officer_id'],
         address=data['address'],
         urgency=data['urgency'],
-        start_time=datetime.strptime(data['start_time'], '%H:%M:%S').time(),  # Convert time string to time object
+        start_time=start_time_obj,
         resolved=data['resolved'],
-        time_resolved=datetime.strptime(data['time_resolved'], '%H:%M:%S').time() if data.get('time_resolved') else None,
+        time_resolved=time_resolved_obj,
         event_description=data['event_description'],
         comments=data.get('comments'),
         full_name=data['full_name'],
@@ -94,14 +109,14 @@ def create_report():
 
     # Commit the transaction to save both the report and the people involved
     db.session.commit()
-    
+
+    # Optionally, send a notification to the property manager about the report
     send_report_notification(new_report.pms_email, new_report)
 
     return jsonify({
         "message": "Report and associated people created successfully",
         "report": new_report.to_dict()
     }), 201
-    
     
 # an api to get all the reports that a property manager receive  sorted by most recent
 
@@ -273,4 +288,73 @@ def delete_report(id):
     db.session.commit()
     return jsonify({"message": "Report deleted successfully"})
 
+# gets all reports from an officer 
 
+@main.route('/api/officer_reports', methods=['GET'])
+@cross_origin(supports_credentials=True)
+def get_officer_reports():
+    officer_id = request.args.get('officer_id')  # Get the officer ID from query params
+
+    # Debug: print officer_id
+    print(f"Officer ID received: {officer_id}")
+
+    # Check if officer_id is provided
+    if not officer_id:
+        return jsonify({"error": "Officer ID is required"}), 400
+
+    try:
+        # Convert officer_id to the correct type (integer) if necessary
+        try:
+            officer_id = int(officer_id)  # Assuming officer_id is an integer in your database
+        except ValueError:
+            return jsonify({"error": "Officer ID must be a valid integer"}), 400
+
+        # Query the database for reports by the officer's ID
+        reports = IncidentReport.query.filter_by(officer_id=officer_id).all()
+
+        # Debug: print the reports retrieved
+        print(f"Reports retrieved: {reports}")
+
+        # If no reports are found
+        if not reports:
+            return jsonify({"message": "No reports found for the provided officer ID"}), 404
+
+        # Convert reports to a list of dictionaries
+        reports_data = [report.to_dict() for report in reports]
+
+        return jsonify({"officer_id": officer_id, "reports": reports_data}), 200
+
+    except Exception as e:
+        print(f"Error occurred while retrieving reports: {e}")
+        return jsonify({"error": "An internal error occurred while retrieving reports."}), 500
+
+@main.route('/api/reports/<int:report_id>/update', methods=['PUT'])
+@cross_origin(supports_credentials=True)
+def updater_report(report_id):
+    # Retrieve the report by its ID
+    report = IncidentReport.query.get_or_404(report_id)
+    
+    # Get the additional information from the request body
+    data = request.get_json()
+    additional_info = data.get('additional_info')
+
+    # Check if additional information was provided
+    if not additional_info:
+        return jsonify({'error': 'No additional information provided'}), 400
+
+    # Append the new additional information to the report's comments
+    if report.comments:
+        report.comments += f"\n\n The officer later provided the following update: {additional_info}"
+    else:
+        report.comments = f"Additional Info: {additional_info}"
+
+    # Commit the changes to the database
+    db.session.commit()
+
+    # Send notification after updating the report
+    send_notif_update(report)
+
+    return jsonify({
+        'message': 'Report updated successfully',
+        'report': report.to_dict()  # Assuming you have a method to serialize the report
+    }), 200

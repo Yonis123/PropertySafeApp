@@ -274,6 +274,7 @@ function PMReports() {
                                     </li>
                                 ))}
                             </ul>
+                            <p><strong>Security Officer Updated Info:</strong> {selectedReport.comments}</p>
                         </div>
                     ) : (
                         <p>Loading report details...</p>

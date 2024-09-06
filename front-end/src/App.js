@@ -9,6 +9,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import CreateAccount from './Pages/CreateAccount'; 
 import PMDashboard from './Pages/PM-dashboard';
 import PM_Reports from './Pages/PM-reports';
+import CreateOrUpdate from './Pages/CreateOrUpdate';
+import UpdateReport from './Pages/OfficerReport';
+import OfficerReportsPage from './Pages/OfficerReport';
 
 
 
@@ -22,6 +25,8 @@ function App() {
         <Route path="/create-account" element={<CreateAccount />} />
         <Route path="/PM-dashboard" element={<PMDashboard/>} />
         <Route path="/PM-reports" element={<PM_Reports/>} />
+        <Route path="/createOrUpdate" element={<CreateOrUpdate/>} />
+        <Route path="/update-report" element={<OfficerReportsPage/>} />
       </Routes>
     </Router>
     
