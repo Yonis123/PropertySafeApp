@@ -1,0 +1,14 @@
+# Ignore environment variable files
+.env
+
+# Ignore log files
+*.log
+
+# Ignore database files
+*.sqlite3
+
+# Ignore compiled files
+*.pyc
+__pycache__/
+.env
+.venv/
