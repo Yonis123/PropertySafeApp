@@ -35,6 +35,7 @@ msgspec==0.18.6
 multidict==6.0.5
 openai==0.28.0
 packaging==24.1
+psycopg2-binary==2.9.9
 pydantic==2.8.2
 pydantic_core==2.20.1
 PyJWT==2.9.0
@@ -47,3 +48,4 @@ typing_extensions==4.12.2
 urllib3==2.2.2
 Werkzeug==3.0.4
 yarl==1.9.6
+-e git+https://github.com/Yonis123/Make-Incident-Report.git@1e5184a2415fbcb04fc35e2bad045be6079ce519#egg=yonis_ir
