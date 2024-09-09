@@ -346,7 +346,7 @@ def updater_report(report_id):
     if report.comments:
         report.comments += f"\n\n The officer later provided the following update: {additional_info}"
     else:
-        report.comments = f"Additional Info: {additional_info}"
+        report.comments = f" {additional_info}"
 
     # Commit the changes to the database
     db.session.commit()
