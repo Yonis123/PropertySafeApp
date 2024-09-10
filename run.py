@@ -11,6 +11,7 @@ app = create_app()
 
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+app.config['API_URL'] = "https://propertysafeapp.onrender.com"
 
 # Initialize CORS
 CORS(app)
