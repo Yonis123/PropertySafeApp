@@ -37,7 +37,7 @@ def create_app():
     # Custom unauthorized handler (for API-based responses)
     @login_manager.unauthorized_handler
     def unauthorized():
-        return redirect(os.getenv('LOGIN_URL', f'{os.getenv('API_URL')}/pm-portal'))  # Redirect to frontend login page
+        return redirect(os.getenv("LOGIN_URL", f"{os.getenv('API_URL')}/pm-portal"))
 
     @login_manager.user_loader
     def load_user(user_id):
