@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';  // Import useNavigate
 import './CreateAccount.css';
 import pmpic from '../assets/png/pmpic.png';
+const apiUrl = process.env.REACT_APP_API_URL
 
 function CreateAccount() {
   const [email, setEmail] = useState('');
@@ -21,7 +22,7 @@ function CreateAccount() {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/create-account', {
+      const response = await fetch(`${apiUrl}/api/create-account`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

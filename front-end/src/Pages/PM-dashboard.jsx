@@ -7,6 +7,7 @@ import resolvedpic from '../assets/png/resolved.png';
 import resolved2pic from '../assets/png/resolved2.png';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';  // Import Modal component
+const apiUrl = process.env.REACT_APP_API_URL
 
 function PMDashboard() {
     const [reports, setReports] = useState([]); // State to store reports, initialized as an empty array
@@ -22,7 +23,7 @@ function PMDashboard() {
     // Function to fetch and view the report details in a modal
     const viewReport = async (id) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/reports/${id}`, {
+            const response = await fetch(`${apiUrl}/api/reports/${id}`, {
                 method: 'GET',
                 credentials: 'include',  // Include credentials (session cookies)
             });
@@ -41,7 +42,7 @@ function PMDashboard() {
 
     const resolveReport = async (id) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/resolve/${id}`, {
+            const response = await fetch(`${apiUrl}/api/resolve/${id}`, {
                 method: 'PUT',
                 credentials: 'include',  // Include credentials (session cookies)
             });
@@ -64,7 +65,7 @@ function PMDashboard() {
     // Function to fetch property manager email
     const fetchPMEmail = async () => {
         try {
-            const response = await fetch('http://localhost:5000/current_pm', {
+            const response = await fetch(`${apiUrl}/current_pm`, {
                 method: 'GET',
                 credentials: 'include',  // Include credentials (session cookies)
             });
@@ -83,7 +84,7 @@ function PMDashboard() {
     // Function to fetch the total number of reports
     const fetchReportsCount = async (email) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/reports_count/${email}`, {
+            const response = await fetch(`${apiUrl}/api/reports_count/${email}`, {
                 method: 'GET',
                 credentials: 'include',  // Include credentials (session cookies)
             });
@@ -102,7 +103,7 @@ function PMDashboard() {
     // Function to fetch reports from the backend
     const fetchReports = async (email) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/reports/${email}`, {
+            const response = await fetch(`${apiUrl}/api/reports/${email}`, {
                 method: 'GET',
                 credentials: 'include',  // Include credentials (session cookies)
             });
@@ -135,7 +136,7 @@ function PMDashboard() {
     // Function to log out the user
     const handleLogout = async () => {
         try {
-            const response = await fetch('http://localhost:5000/logout', {
+            const response = await fetch(`${apiUrl}/logout`, {
                 method: 'POST',
                 credentials: 'include',  // Important: this includes session cookies
                 headers: {
@@ -145,7 +146,7 @@ function PMDashboard() {
 
             if (response.ok) {
                 // If the logout is successful, redirect the user to the login page
-                window.location.href = 'http://localhost:3000/pm-portal';
+                window.location.href = `${apiUrl}/pm-portal`;
             } else {
                 console.error('Logout failed:', response.statusText);
             }

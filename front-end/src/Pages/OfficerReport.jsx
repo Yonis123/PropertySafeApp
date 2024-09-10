@@ -6,6 +6,7 @@ import Modal from 'react-bootstrap/Modal';  // Import Bootstrap Modal
 import Spinner from 'react-bootstrap/Spinner';  // Import Spinner for loading
 import './OfficerReport.css';
 import { useNavigate } from 'react-router-dom';
+const apiUrl = process.env.REACT_APP_API_URL
 
 function OfficerReportsPage() {
   const [officerId, setOfficerId] = useState('');
@@ -22,7 +23,7 @@ function OfficerReportsPage() {
   const fetchReports = async () => {
     setLoading(true); // Set loading state
     try {
-      const response = await fetch(`http://localhost:5000/api/officer_reports?officer_id=${officerId}`, {
+      const response = await fetch(`${apiUrl}/api/officer_reports?officer_id=${officerId}`, {
         method: 'GET',
         credentials: 'include',
       });
@@ -72,7 +73,7 @@ function OfficerReportsPage() {
 
     setUpdateLoading(true); // Show loading spinner during update
     try {
-      const response = await fetch(`http://localhost:5000/api/reports/${selectedReport.id}/update`, {
+      const response = await fetch(`${apiUrl}/api/reports/${selectedReport.id}/update`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

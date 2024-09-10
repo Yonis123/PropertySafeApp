@@ -6,6 +6,8 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form'; // Import Bootstrap Form
 import Row from 'react-bootstrap/Row'; // Import Bootstrap Grid components
 import Col from 'react-bootstrap/Col'; // Import Bootstrap Grid components
+const apiUrl = process.env.REACT_APP_API_URL
+
 
 function PMReports() {
     const [reports, setReports] = useState([]); 
@@ -24,7 +26,7 @@ function PMReports() {
 
     const fetchPMEmailAndReports = async () => {
         try {
-            const response = await fetch('http://localhost:5000/current_pm', {
+            const response = await fetch(`${apiUrl}/current_pm`, {
                 method: 'GET',
                 credentials: 'include',
             });
@@ -43,7 +45,7 @@ function PMReports() {
 
     const fetchReports = async (email) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/reports/${email}`, {
+            const response = await fetch(`${apiUrl}/api/reports/${email}`, {
                 method: 'GET',
                 credentials: 'include',
             });
@@ -66,7 +68,7 @@ function PMReports() {
 
     const viewReport = async (id) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/reports/${id}`, {
+            const response = await fetch(`${apiUrl}/api/reports/${id}`, {
                 method: 'GET',
                 credentials: 'include',
             });
@@ -85,7 +87,7 @@ function PMReports() {
 
     const resolveReport = async (id) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/resolve/${id}`, {
+            const response = await fetch(`${apiUrl}/api/resolve/${id}`, {
                 method: 'PUT',
                 credentials: 'include',
             });
@@ -102,7 +104,7 @@ function PMReports() {
 
     const handleLogout = async () => {
         try {
-            const response = await fetch('http://localhost:5000/logout', {
+            const response = await fetch(`${apiUrl}/logout`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
@@ -111,7 +113,8 @@ function PMReports() {
             });
 
             if (response.ok) {
-                window.location.href = 'http://localhost:3000/pm-portal';
+                
+                navigate('/')
             } else {
                 console.error('Logout failed:', response.statusText);
             }

@@ -6,6 +6,7 @@ import Col from 'react-bootstrap/Col';
 import { useNavigate } from 'react-router-dom';
 import Spinner from 'react-bootstrap/Spinner'; // Import Spinner for loading indicator
 import './OfficerPortalPage.css';
+const apiUrl = process.env.REACT_APP_API_URL
 
 function OfficerPortalPage() {
   const [officerId, setOfficerId] = useState('');
@@ -66,7 +67,7 @@ function OfficerPortalPage() {
 
       try {
         setLoading(true); // Show loading spinner
-        const response = await fetch('http://localhost:5000/api/make_report', {
+        const response = await fetch(`${apiUrl}/api/make_report`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

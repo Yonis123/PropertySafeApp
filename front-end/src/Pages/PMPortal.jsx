@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './PMPortal.css';
 import pmpic from '../assets/png/pmpic.png';
+const apiUrl = process.env.REACT_APP_API_URL
+
+
 
 function PMPortal() {
   const [email, setEmail] = useState('');
@@ -11,9 +14,10 @@ function PMPortal() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
+    console.log('REACT_APP_API_URL:', process.env.REACT_APP_API_URL);
+    console.log('API URL:', apiUrl);
     try {
-      const response = await fetch('http://localhost:5000/login', {
+      const response = await fetch(`${apiUrl}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

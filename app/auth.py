@@ -30,9 +30,11 @@ def login():
 
 # Logout Route
 @auth.route('/logout', methods=['POST'])
-@login_required  # Ensure the user is logged in to log out
 @cross_origin(supports_credentials=True)
 def logout():
+    if not current_user.is_authenticated:
+        return jsonify({"error": "User is not logged in"}), 401
+    
     logout_user()
     return jsonify({"message": "Logged out successfully"}), 200
 
