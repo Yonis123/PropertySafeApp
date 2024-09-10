@@ -6,7 +6,8 @@ import Col from 'react-bootstrap/Col';
 import { useNavigate } from 'react-router-dom';
 import Spinner from 'react-bootstrap/Spinner'; // Import Spinner for loading indicator
 import './OfficerPortalPage.css';
-const apiUrl = process.env.REACT_APP_API_URL
+// const apiUrl = process.env.REACT_APP_API_URL
+const apiUrl = "https://propertysafeapp.onrender.com"
 
 function OfficerPortalPage() {
   const [officerId, setOfficerId] = useState('');

@@ -6,8 +6,8 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form'; // Import Bootstrap Form
 import Row from 'react-bootstrap/Row'; // Import Bootstrap Grid components
 import Col from 'react-bootstrap/Col'; // Import Bootstrap Grid components
-const apiUrl = process.env.REACT_APP_API_URL
-
+// const apiUrl = process.env.REACT_APP_API_URL
+const apiUrl = "https://propertysafeapp.onrender.com"
 
 function PMReports() {
     const [reports, setReports] = useState([]); 

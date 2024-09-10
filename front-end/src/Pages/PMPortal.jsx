@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './PMPortal.css';
 import pmpic from '../assets/png/pmpic.png';
-const apiUrl = process.env.REACT_APP_API_URL
+// const apiUrl = process.env.REACT_APP_API_URL
+const apiUrl = "https://propertysafeapp.onrender.com"
 
 
 

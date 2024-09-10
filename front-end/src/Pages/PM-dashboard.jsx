@@ -7,7 +7,8 @@ import resolvedpic from '../assets/png/resolved.png';
 import resolved2pic from '../assets/png/resolved2.png';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';  // Import Modal component
-const apiUrl = process.env.REACT_APP_API_URL
+// const apiUrl = process.env.REACT_APP_API_URL
+const apiUrl = "https://propertysafeapp.onrender.com"
 
 function PMDashboard() {
     const [reports, setReports] = useState([]); // State to store reports, initialized as an empty array

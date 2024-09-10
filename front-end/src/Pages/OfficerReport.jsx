@@ -6,7 +6,8 @@ import Modal from 'react-bootstrap/Modal';  // Import Bootstrap Modal
 import Spinner from 'react-bootstrap/Spinner';  // Import Spinner for loading
 import './OfficerReport.css';
 import { useNavigate } from 'react-router-dom';
-const apiUrl = process.env.REACT_APP_API_URL
+// const apiUrl = process.env.REACT_APP_API_URL
+const apiUrl = "https://propertysafeapp.onrender.com"
 
 function OfficerReportsPage() {
   const [officerId, setOfficerId] = useState('');
