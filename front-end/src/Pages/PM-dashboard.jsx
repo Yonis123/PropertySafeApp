@@ -146,8 +146,10 @@ function PMDashboard() {
 
             if (response.ok) {
                 // If the logout is successful, redirect the user to the login page
-                window.location.href = `${apiUrl}/pm-portal`;
+                console.log('logout sucessful')
+                navigate('/')
             } else {
+                navigate('/')
                 console.error('Logout failed:', response.statusText);
             }
         } catch (error) {
